@@ -27,6 +27,11 @@ user    0m11.005s
 sys     0m4.058s
 ```
 
+With fewer dependencies, the speedup is smaller. At some point, the
+overhead of building the index means `fastup` will cause a small
+slowdown. Test the speedup first, to see if `fastup` is worth it or
+not for any particular application.
+
 ## Usage
 
 `fastup/autoapply` should be required after `bundler/setup` and before
