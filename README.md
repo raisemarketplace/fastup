@@ -29,8 +29,12 @@ sys     0m4.058s
 
 ## Usage
 
-After requiring `bundler/setup`, require `fastup/autoapply`, for
-example in `config/boot.rb` of a Rails app:
+`fastup/autoapply` should be required after `bundler/setup` and before
+`Bundler.require`, or more generally, after `$LOAD_PATH` has been
+populated with all dependencies and before most of them have been
+`require`'d.
+
+For example in `config/boot.rb` of a Rails app:
 
 ```
 require 'rubygems'
