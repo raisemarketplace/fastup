@@ -1,0 +1,25 @@
+source 'https://rubygems.org'
+
+# just a bunch of gems, including rails; more gems means fastup can
+# give a greater speedup
+
+gem 'barby'
+gem 'cancan'
+gem 'crack'
+gem 'devise'
+gem 'geoip'
+gem 'haml'
+gem 'newrelic_rpm'
+gem 'paperclip'
+gem 'prawn'
+gem 'pry'
+gem 'rack-attack'
+gem 'rack-cors'
+gem 'rack-timeout'
+gem 'rails'
+gem 'rest-client'
+gem 'roo'
+gem 'shoulda-matchers'
+gem 'unicorn'
+
+gem 'fastup', path: '../..'

@@ -1,3 +1,4 @@
+require 'benchmark'
 require 'tmpdir'
 
 require 'minitest/autorun'
@@ -5,6 +6,40 @@ require 'minitest/autorun'
 require 'fastup'
 
 module Fastup
+  class TestAppBoot < Minitest::Test
+    def test_app_boot
+      results = {}
+
+      Bundler.with_original_env do
+        Dir.chdir(File.expand_path('../app', __FILE__)) do
+          results[:setup] = `bundle --quiet`
+          raise "bundle exited with error: #{results[:setup]}" unless $?.success?
+
+          results[:total_fastup] = Benchmark.measure {
+            out = `USE_FASTUP=1 bundle exec ruby boot.rb 2>/dev/null`
+            raise "fastup exited with error: #{out}" unless $?.success?
+            results[:output_fastup] = out.lines.reject{ |p| p =~ %r{fastup/lib/fastup} }
+          }
+          results[:total_nofastup] = Benchmark.measure {
+            out = `bundle exec ruby boot.rb`
+            raise "nofastup exited with error: #{out}" unless $?.success?
+            results[:output_nofastup] = out.lines.reject{ |p| p =~ %r{fastup/lib/fastup} }
+          }
+        end
+      end
+
+      results[:output_fastup].reject!{ |p| p =~ %r{fastup/lib/fastup} }
+      results[:output_nofastup].reject!{ |p| p =~ %r{fastup/lib/fastup} }
+
+      # warn("\nfastup: %.2f nofastup: %.2f" % [results[:total_fastup].total, results[:total_nofastup].total])
+
+      assert results[:total_fastup].total < results[:total_nofastup].total,
+             "expected fastup (#{results[:total_fastup]}) to be faster than without (#{results[:total_nofastup]})"
+
+      assert_equal results[:output_fastup], results[:output_nofastup]
+    end
+  end
+
   class TestSearchPath < Minitest::Test
     def setup
     end
