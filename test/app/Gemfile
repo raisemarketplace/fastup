@@ -1,25 +1,102 @@
 source 'https://rubygems.org'
 
-# just a bunch of gems, including rails; more gems means fastup can
-# give a greater speedup
-
-gem 'barby'
-gem 'cancan'
-gem 'crack'
-gem 'devise'
-gem 'geoip'
-gem 'haml'
-gem 'newrelic_rpm'
-gem 'paperclip'
-gem 'prawn'
-gem 'pry'
-gem 'rack-attack'
-gem 'rack-cors'
-gem 'rack-timeout'
-gem 'rails'
-gem 'rest-client'
-gem 'roo'
-gem 'shoulda-matchers'
-gem 'unicorn'
-
 gem 'fastup', path: '../..'
+
+# top 100 or so most downloaded gems according to rubygems.org 2018-08-16
+# with some deletions
+%w(
+actionmailer
+actionpack
+actionview
+activejob
+activemodel
+activerecord
+activesupport
+addressable
+arel
+awesome_print
+aws-sdk
+aws-sdk-core
+aws-sdk-resources
+builder
+bundler
+coderay
+coffee-rails
+coffee-script
+coffee-script-source
+concurrent-ruby
+daemons
+diff-lcs
+domain_name
+erubis
+excon
+execjs
+faraday
+ffi
+globalid
+hashie
+highline
+hike
+http-cookie
+httparty
+i18n
+jmespath
+json
+jwt
+loofah
+mail
+method_source
+mime-types
+mime-types-data
+mini_portile
+mini_portile2
+minitest
+multi_json
+multi_xml
+multipart-post
+net-scp
+net-ssh
+netrc
+nokogiri
+polyglot
+pry
+public_suffix
+rack
+rack-protection
+rack-test
+rails
+rails-deprecated_sanitizer
+rails-dom-testing
+rails-html-sanitizer
+railties
+rake
+rb-fsevent
+rdoc
+redis
+rest-client
+rspec
+rspec-core
+rspec-expectations
+rspec-mocks
+rspec-rails
+rspec-support
+rubygems-update
+rubyzip
+sass
+sass-rails
+sinatra
+slop
+sprockets
+sprockets-rails
+thor
+thread_safe
+tilt
+treetop
+turbolinks
+tzinfo
+uglifier
+unf
+unf_ext
+).each do |name|
+  gem name
+end
