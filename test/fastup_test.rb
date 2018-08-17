@@ -1,12 +1,11 @@
 require 'benchmark'
 require 'tmpdir'
 
-require 'minitest/autorun'
-
-require 'fastup'
+require 'test_helper'
 
 module Fastup
   class TestAppBoot < Minitest::Test
+    tag :slow
     def test_app_boot
       results = {}
 
@@ -31,7 +30,7 @@ module Fastup
       results[:output_fastup].reject!{ |p| p =~ %r{fastup/lib/fastup} }
       results[:output_nofastup].reject!{ |p| p =~ %r{fastup/lib/fastup} }
 
-      # warn("\nfastup: %.2f nofastup: %.2f" % [results[:total_fastup].total, results[:total_nofastup].total])
+      warn("\nfastup: %.2f nofastup: %.2f" % [results[:total_fastup].total, results[:total_nofastup].total])
 
       assert results[:total_fastup].total < results[:total_nofastup].total,
              "expected fastup (#{results[:total_fastup]}) to be faster than without (#{results[:total_nofastup]})"
