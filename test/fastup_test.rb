@@ -17,12 +17,12 @@ module Fastup
           results[:total_fastup] = Benchmark.measure {
             out = `USE_FASTUP=1 bundle exec ruby boot.rb 2>/dev/null`
             raise "fastup exited with error: #{out}" unless $?.success?
-            results[:output_fastup] = out.lines.reject{ |p| p =~ %r{fastup/lib/fastup} }
+            results[:output_fastup] = out.lines.reject{ |p| p =~ %r{/lib/fastup} }
           }
           results[:total_nofastup] = Benchmark.measure {
             out = `bundle exec ruby boot.rb`
             raise "nofastup exited with error: #{out}" unless $?.success?
-            results[:output_nofastup] = out.lines.reject{ |p| p =~ %r{fastup/lib/fastup} }
+            results[:output_nofastup] = out.lines.reject{ |p| p =~ %r{/lib/fastup} }
           }
         end
       end
