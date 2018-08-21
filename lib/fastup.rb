@@ -27,7 +27,9 @@ module Fastup
         ret
       end
     end
-    Object.prepend mod
+
+    Object.prepend mod # normal "require 'somegem'" invokes this
+    Kernel.singleton_class.prepend mod # explicit "Kernel.require 'somegem'"
   end
 
   module XFile
