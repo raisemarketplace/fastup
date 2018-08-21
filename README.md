@@ -4,33 +4,19 @@ Fastup builds an index from `$LOAD_PATH` and patches `require` to use
 that index to significantly speed up booting up large Rails apps with
 many dependencies.
 
-```
-$ bundle show | wc -l
-375
+When `require 'code'` is called, Ruby searches each element of
+`$LOAD_PATH`, attempting to load `code.rb` from each directory in
+`$LOAD_PATH`. Watching the output of `strace` while starting a Ruby
+program reveals a large number of failed attempts to open non-existent
+files, until the correct path is found. The index built by `fastup`
+allows skipping many of these failed attempts.
 
-### before fastup
+The speedup is most noticeable in applications with many
+dependencies. With few dependencies, the overhead of `fastup` will
+cause a small slowdown. Test the speedup first, to see if `fastup` is
+worth it or not for any particular application.
 
-$ time echo 'puts "loaded #{$LOADED_FEATURES.size} features"' | bundle exec rails c
-loaded 5095 features
-
-real    0m23.652s
-user    0m14.300s
-sys     0m9.237s
-
-### with fastup enabled
-
-$ time echo 'puts "loaded #{$LOADED_FEATURES.size} features"' | bundle exec rails c
-loaded 5097 features
-
-real    0m15.142s
-user    0m11.005s
-sys     0m4.058s
-```
-
-With fewer dependencies, the speedup is smaller. At some point, the
-overhead of building the index means `fastup` will cause a small
-slowdown. Test the speedup first, to see if `fastup` is worth it or
-not for any particular application.
+![plot](plot.png)
 
 ## Usage
 
@@ -41,7 +27,7 @@ populated with all dependencies and before most of them have been
 
 For example in `config/boot.rb` of a Rails app:
 
-```
+```ruby
 require 'rubygems'
 
 # Set up gems listed in the Gemfile.
