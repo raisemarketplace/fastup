@@ -1,34 +1,37 @@
 require 'benchmark'
+require 'open3'
 require 'tmpdir'
 
 require 'test_helper'
 
 module Fastup
   class TestAppBoot < Minitest::Test
+    def capture(*args)
+      out, status = Open3.capture2e(*args)
+      raise "#{args} exited with error:\n#{out}" unless status.success?
+      out
+    end
+
     tag :slow
     def test_app_boot
       results = {}
 
       Bundler.with_original_env do
         Dir.chdir(File.expand_path('../app', __FILE__)) do
-          results[:setup] = `bundle --quiet`
-          raise "bundle exited with error: #{results[:setup]}" unless $?.success?
+          results[:setup] = capture "bundle --quiet"
+
+          filter = ->(line) do
+            line =~ /^feature:/ && line !~ %r{/lib/fastup}
+          end
 
           results[:total_fastup] = Benchmark.measure {
-            out = `USE_FASTUP=1 bundle exec ruby boot.rb 2>/dev/null`
-            raise "fastup exited with error: #{out}" unless $?.success?
-            results[:output_fastup] = out.lines.reject{ |p| p =~ %r{/lib/fastup} }
+            results[:output_fastup] = capture("USE_FASTUP=1 BUNDLE_FROZEN=true bundle exec ruby boot.rb").lines.select(&filter)
           }
           results[:total_nofastup] = Benchmark.measure {
-            out = `bundle exec ruby boot.rb`
-            raise "nofastup exited with error: #{out}" unless $?.success?
-            results[:output_nofastup] = out.lines.reject{ |p| p =~ %r{/lib/fastup} }
+            results[:output_nofastup] = capture("BUNDLE_FROZEN=true bundle exec ruby boot.rb").lines.select(&filter)
           }
         end
       end
-
-      results[:output_fastup].reject!{ |p| p =~ %r{fastup/lib/fastup} }
-      results[:output_nofastup].reject!{ |p| p =~ %r{fastup/lib/fastup} }
 
       warn("\nfastup: %.2f nofastup: %.2f" % [results[:total_fastup].total, results[:total_nofastup].total])
 
