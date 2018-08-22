@@ -19,11 +19,8 @@ module Fastup
   end
 
   def self.apply!
-    warn "fastup: building load path index"
     @sp = SearchPath.new($LOAD_PATH)
     @suffixes = Gem.suffixes.lazy
-
-    warn "fastup: patching require"
 
     instance_require = Kernel.instance_method(:require)
     require = Kernel.method(:require)
