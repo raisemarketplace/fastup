@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'fastup'
-  s.version = '1.0.2'
+  s.version = '1.0.3pre'
   s.licenses    = ['MIT']
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
