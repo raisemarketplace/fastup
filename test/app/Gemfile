@@ -2,101 +2,63 @@ source 'https://rubygems.org'
 
 gem 'fastup', path: '../..'
 
-# top 100 or so most downloaded gems according to rubygems.org 2018-08-16
-# with some deletions
-%w(
-actionmailer
-actionpack
-actionview
-activejob
-activemodel
-activerecord
-activesupport
-addressable
-arel
-awesome_print
-aws-sdk
-aws-sdk-core
-aws-sdk-resources
-builder
-bundler
-coderay
-coffee-rails
-coffee-script
-coffee-script-source
-concurrent-ruby
-daemons
-diff-lcs
-domain_name
-erubis
-excon
-execjs
-faraday
-ffi
-globalid
-hashie
-highline
-hike
-http-cookie
-httparty
-i18n
-jmespath
-json
-jwt
-loofah
-mail
-method_source
-mime-types
-mime-types-data
-mini_portile
-mini_portile2
-minitest
-multi_json
-multi_xml
-multipart-post
-net-scp
-net-ssh
-netrc
-nokogiri
-polyglot
-pry
-public_suffix
-rack
-rack-protection
-rack-test
-rails
-rails-deprecated_sanitizer
-rails-dom-testing
-rails-html-sanitizer
-railties
-rake
-rb-fsevent
-rdoc
-redis
-rest-client
-rspec
-rspec-core
-rspec-expectations
-rspec-mocks
-rspec-rails
-rspec-support
-rubygems-update
-rubyzip
-sass
-sass-rails
-sinatra
-slop
-sprockets
-sprockets-rails
-thor
-thread_safe
-tilt
-treetop
-turbolinks
-tzinfo
-uglifier
-unf
-unf_ext
-).each do |name|
-  gem name
+# top downloaded gems according to rubygems.org 2018-08-17 with some
+# deletions
+#
+# for page in {1..50}; do curl -sf "https://rubygems.org/stats?page=$page" |  grep -E '\s+<h3.*/gems/' | sed -r 's,.*>([^><]+)</a></h3>,\1,'; done
+pool = File.read('topgems').lines.map(&:strip).reject{ |x| x.empty? } - %w(
+  bson_ext
+  bundler
+  chef
+  cocoapods
+  cocoapods-core
+  inspec
+  foreman
+  mysql2
+  money
+  pg
+  rb-inotify
+  therubyracer
+  train
+  quiet_assets
+  fog-profitbricks
+  fog-rackspace
+  fog-brightbox
+  fog-softlayer
+  fog-dynect
+  fog-google
+  countries
+  aws-sdk-v1
+  curb
+  fog
+  mysql
+  rmagick
+  sqlite3
+
+  sinatra
+  factory_girl
+  factory_girl_rails
+  polyglot
+  treetop
+
+  json_pure
+  celluloid
+  cocaine
+
+  ohai
+  chef-config
+  chef-sugar
+
+  bootstrap-sass
+  bourbon
+  sass-rails
+
+  puppet
+
+  safe_yaml
+)
+
+pool.first(ENV.fetch('GEMS_COUNT', pool.size).to_i).each do |name|
+  gem(name)
 end
+
