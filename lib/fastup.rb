@@ -1,35 +1,40 @@
 module Fastup
-  extend self
+  def self.require(name, original_require)
+    path = @suffixes.map{ |s| @sp.lookup(name.to_s + s) rescue nil }.find do |p|
+      p && File.file?(p)
+    end
 
-  def apply!
-    warn "fastup: building load path index"
-    sp = SearchPath.new($LOAD_PATH)
-    suffixes = Gem.suffixes.lazy
+    # require the absolute path if found, otherwise fallback to original name
+    ret = original_require.call(path || name)
 
-    warn "fastup: patching require"
-    mod = Module.new do
-      define_method(:require) do |name|
-        path = suffixes.map{ |s| sp.lookup(name.to_s + s) rescue nil }.find do |p|
-          p && File.file?(p)
-        end
-
-        # require the absolute path if found, otherwise fallback to original name
-        ret = super(path || name)
-
-        if ret && ENV['FASTUP_DEBUG']
-          if path
-            warn "fastup: loaded #{name} => #{path}"
-          else
-            warn "fastup: super #{name}"
-          end
-        end
-
-        ret
+    if ret && ENV['FASTUP_DEBUG']
+      if path
+        warn "fastup: loaded #{name} => #{path}"
+      else
+        warn "fastup: super #{name}"
       end
     end
 
-    Object.prepend mod # normal "require 'somegem'" invokes this
-    Kernel.singleton_class.prepend mod # explicit "Kernel.require 'somegem'"
+    ret
+  end
+
+  def self.apply!
+    warn "fastup: building load path index"
+    @sp = SearchPath.new($LOAD_PATH)
+    @suffixes = Gem.suffixes.lazy
+
+    warn "fastup: patching require"
+
+    instance_require = Kernel.instance_method(:require)
+    require = Kernel.method(:require)
+
+    Kernel.send(:define_method, :require) do |name|
+      Fastup.require(name, instance_require.bind(self))
+    end
+
+    Kernel.singleton_class.send(:define_method, :require) do |name|
+      Fastup.require(name, require)
+    end
   end
 
   module XFile
